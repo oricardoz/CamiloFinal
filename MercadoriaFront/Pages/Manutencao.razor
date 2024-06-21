@@ -28,7 +28,7 @@
                 <MyInputNumber Title="Valor (R$)" @bind-Value="Objeto.Valor" Disabled="@Desabilitar" />
             </div>
             <div class="form-group">
-                <MyInput Title="Setor" @bind-Value="Objeto.Setor" Disabled="@Desabilitar" />
+                <MyInput Title="Setor" @bind-Value="Objeto.Setor" Disabled="true" />
             </div>
             <div class="button-group">
                 @if (ComparaAcao(Acoes.Alterar))

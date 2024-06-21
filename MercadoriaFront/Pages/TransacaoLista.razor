@@ -6,7 +6,7 @@
 @using System.Text.Json
 @inject Api api
 
-<h1>Mercadoria</h1>
+<h1>Transferencias</h1>
 
 @if (Objetos == null)
 {
@@ -15,17 +15,14 @@
 else
 {
     <div class="table-container">
-        <a href=@($"/mercadoria/{Acoes.Inserir}") class="btn btn-primary mb-3">Inserir</a>
         <h2>Buscar Por</h2>
             <form class="form-custom">
             <div class="form-group">
                 <select class="form-select" aria-label="Default select example" @onchange="SelecionarOpcao">
-                    <option value="nome">Nome</option>
-                    <option value="quantidade">Quantidade</option>
-                    <option value="peso">Peso</option>
-                    <option value="datacadastro">Data</option>
-                    <option value="setor">Setor</option>
-                    <option value="valor">Valor</option>
+                    <option value="produto">Produto</option>
+                    <option value="setororigem">Setor de Origem</option>
+                    <option value="setordestino">Setor de Destino</option>
+                    <option value="datatransferencia">Data de Transferencia</option>
                 </select>
                 <input class="form-text" type="text" @bind="valor" @oninput="FindBy" placeholder="@selecionado"/>
             </div>
@@ -34,61 +31,35 @@ else
             <thead>
                 <tr>
                     <th scope="col">
-                        Nome
-                        <button class="btn btn-link" @onclick='() => SortByColumn("nome", "ASC")'><ion-icon name="caret-up-outline"></ion-icon></button>
-                        <button class="btn btn-link" @onclick='() => SortByColumn("nome", "DESC")'><ion-icon name="caret-down-outline"></ion-icon></button>
+                        Produto
+                        <button class="btn btn-link" @onclick='() => SortByColumn("produto", "ASC")'><ion-icon name="caret-up-outline"></ion-icon></button>
+                        <button class="btn btn-link" @onclick='() => SortByColumn("produto", "DESC")'><ion-icon name="caret-down-outline"></ion-icon></button>
                     </th>
                     <th scope="col">
-                        Quantidade
-                        <button class="btn btn-link" @onclick='() => SortByColumn("quantidade", "ASC")'><ion-icon name="caret-up-outline"></ion-icon></button>
-                        <button class="btn btn-link" @onclick='() => SortByColumn("quantidade", "DESC")'><ion-icon name="caret-down-outline"></ion-icon></button>
+                        Setor de Origem
+                        <button class="btn btn-link" @onclick='() => SortByColumn("setororigem", "ASC")'><ion-icon name="caret-up-outline"></ion-icon></button>
+                        <button class="btn btn-link" @onclick='() => SortByColumn("setororigem", "DESC")'><ion-icon name="caret-down-outline"></ion-icon></button>
                     </th>
                     <th scope="col">
-                        Peso
-                        <button class="btn btn-link" @onclick='() => SortByColumn("peso", "ASC")'><ion-icon name="caret-up-outline"></ion-icon></button>
-                        <button class="btn btn-link" @onclick='() => SortByColumn("peso", "DESC")'><ion-icon name="caret-down-outline"></ion-icon></button>
+                        Setor de Destino
+                        <button class="btn btn-link" @onclick='() => SortByColumn("setordestino", "ASC")'><ion-icon name="caret-up-outline"></ion-icon></button>
+                        <button class="btn btn-link" @onclick='() => SortByColumn("setordestino", "DESC")'><ion-icon name="caret-down-outline"></ion-icon></button>
                     </th>
                     <th scope="col">
-                        Data de Cadastro
-                        <button class="btn btn-link" @onclick='() => SortByColumn("datacadastro", "ASC")'><ion-icon name="caret-up-outline"></ion-icon></button>
-                        <button class="btn btn-link" @onclick='() => SortByColumn("datacadastro", "DESC")'><ion-icon name="caret-down-outline"></ion-icon></button>
+                        Data de Transferencia
+                        <button class="btn btn-link" @onclick='() => SortByColumn("datatransferencia", "ASC")'><ion-icon name="caret-up-outline"></ion-icon></button>
+                        <button class="btn btn-link" @onclick='() => SortByColumn("datatransferencia", "DESC")'><ion-icon name="caret-down-outline"></ion-icon></button>
                     </th>
-                    <th scope="col">
-                        Setor
-                        <button class="btn btn-link" @onclick='() => SortByColumn("setor", "ASC")'><ion-icon name="caret-up-outline"></ion-icon></button>
-                        <button class="btn btn-link" @onclick='() => SortByColumn("setor", "DESC")'><ion-icon name="caret-down-outline"></ion-icon></button>
-                    </th>
-                    <th scope="col">
-                        Valor
-                        <button class="btn btn-link" @onclick='() => SortByColumn("valor", "ASC")'><ion-icon name="caret-up-outline"></ion-icon></button>
-                        <button class="btn btn-link" @onclick='() => SortByColumn("valor", "DESC")'><ion-icon name="caret-down-outline"></ion-icon></button>
-                    </th>
-                    <th></th>
                 </tr>
             </thead>
             <tbody>
             @foreach(var obj in Objetos)
             {
                 <tr>
-                    <td>@obj.Nome</td>
-                    <td>@obj.Quantidade u</td>
-                    <td>@obj.Peso Kg</td>
-                    <td>@obj.DataCadastro?.ToString("dd/MM/yyyy HH:mm")</td>
-                    <td>@obj.Setor</td>
-                    <td>@obj.Valor.ToString("C2")</td>
-                    <td class="table-actions">
-                        <div class="dropdown">
-                            <button class="btn btn-link" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <ion-icon name="cog-outline"></ion-icon>
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 30px, 0px);">
-                                <a class="dropdown-item" href=@($"/mercadoria/transferir/{obj.Id}")>Tranferir</a>
-                                <a class="dropdown-item" href=@($"/mercadoria/{Acoes.Consultar}/{obj.Id}")>Consultar</a>
-                                <a class="dropdown-item" href=@($"/mercadoria/{Acoes.Alterar}/{obj.Id}")>Alterar</a>
-                                <a class="dropdown-item" href=@($"/mercadoria/{Acoes.Excluir}/{obj.Id}")>Excluir</a>
-                            </div>
-                        </div>
-                    </td>
+                    <td>@obj.Produto</td>
+                    <td>@obj.SetorOrigem</td>
+                    <td>@obj.SetorDestino</td>
+                    <td>@obj.DataTransferencia.ToString("dd/MM/yyyy HH:mm")</td>
                 </tr>
             }      
             </tbody>  
@@ -98,21 +69,21 @@ else
 }
 
 @code {
-    private IList<Mercadoria>? Objetos { get; set; } = null;
+    private IList<Transferencia>? Objetos { get; set; } = null;
 
     protected override async Task OnInitializedAsync()
     {
-        Objetos = await api.GetAsync<Mercadoria>("/api/mercadoria");
+        Objetos = await api.GetAsync<Transferencia>("/api/transferencia");
     }
 
     private async Task SortByColumn(string orderByColumn, string orderByDirection)
     {
-        Objetos = await api.GetFilteredMercadorias<Mercadoria>("/api/Mercadoria/ordenar", orderByColumn, orderByDirection);
+        Objetos = await api.GetFilteredMercadorias<Transferencia>("/api/transferencia/ordenar", orderByColumn, orderByDirection);
     }
 
     private string valor;
 
-    private string selecionado = "nome";
+    private string selecionado = "produto";
 
     private void SelecionarOpcao(ChangeEventArgs e) {
 
@@ -123,8 +94,8 @@ else
     private async Task FindBy(ChangeEventArgs args)
     {
         if(args.Value.ToString() == "")
-            Objetos = await api.GetAsync<Mercadoria>("/api/mercadoria");
+            Objetos = await api.GetAsync<Transferencia>("/api/transferencia");
         else
-            Objetos = await api.GetBySearch<Mercadoria>("/api/Mercadoria/filtrar", args.Value.ToString(), selecionado);
+            Objetos = await api.GetBySearch<Transferencia>("/api/transferencia/filtrar", args.Value.ToString(), selecionado);
     }
 }
