@@ -72,6 +72,20 @@ namespace MercadoriaInfra.DAOs
             }
         }
 
+        public async Task<IList<T>> RetornaPorTermoAsync(string searchTerm, string selecionado) {
+
+            using (var conexao = new SqliteConnection(GetStringConexao()))
+            {
+                conexao.Open();
+
+                string sql = $"SELECT * FROM mercadoria WHERE {selecionado} LIKE '{searchTerm}%'";
+
+                var objetos = await conexao.QueryAsync<T>(sql);
+
+                return objetos.ToList();
+            }
+        }
+
         public async Task<T> RetornarPorIdAsync(string id)
         {
             using (var conexao = new SqliteConnection(GetStringConexao()))

@@ -14,7 +14,7 @@
     else
     {
         <h1>Mercadoria (@Acao)</h1>
-        <EditForm Model="Objeto" OnSubmit="Salvar" FormName="AtletaForm">
+        <EditForm Model="Objeto" OnSubmit="Salvar" FormName="MercadoriaForm">
             <div class="form-group">
                 <MyInput Title="Nome" @bind-Value="Objeto.Nome" Disabled="@Desabilitar" />
             </div>
@@ -22,7 +22,7 @@
                 <MyInputNumber Title="Quantidade" @bind-Value="Objeto.Quantidade" Disabled="@Desabilitar" />
             </div>
             <div class="form-group">
-                <MyInputNumber Title="Peso (Kgs)" @bind-Value="Objeto.Peso" Disabled="@Desabilitar" />
+                <MyInputNumber Title="Peso (Kg)" @bind-Value="Objeto.Peso" Disabled="@Desabilitar" />
             </div>
             <div class="form-group">
                 <MyInputNumber Title="Valor (R$)" @bind-Value="Objeto.Valor" Disabled="@Desabilitar" />

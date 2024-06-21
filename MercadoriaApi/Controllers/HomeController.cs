@@ -25,10 +25,23 @@ namespace MercadoriaApi.Controllers
             return Ok(objetos);
         }
 
-        [HttpGet("{orderByColumn}/{orderByDirection}")]
-        public async Task<ActionResult<IEnumerable<Mercadoria>>> GetAsync(string orderByColumn, string orderByDirection)
+        [HttpGet("ordenar/{orderByColumn}/{orderByDirection}")]
+        public async Task<ActionResult<IEnumerable<Mercadoria>>> GetOrderedAsync(string orderByColumn, string orderByDirection)
         {
             var objetos = await dao.RetornaPorOrdemAsync(orderByColumn, orderByDirection);
+
+            if (objetos == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(objetos);
+        }
+
+        [HttpGet("filtrar/{searchTerm}/{selecionado}")]
+        public async Task<ActionResult<IEnumerable<Mercadoria>>> FilterAsync(string searchTerm, string selecionado)
+        {
+            var objetos = await dao.RetornaPorTermoAsync(searchTerm, selecionado);
 
             if (objetos == null)
             {
