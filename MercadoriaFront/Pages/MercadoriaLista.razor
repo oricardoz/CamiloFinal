@@ -104,7 +104,7 @@ else
 
     private async Task SortByColumn(string orderByColumn, string orderByDirection)
     {
-        Objetos = await api.GetFilteredMercadorias<Mercadoria>("/api/ordenar/Mercadoria/ordenar", orderByColumn, orderByDirection);
+        Objetos = await api.GetFilteredMercadorias<Mercadoria>("/api/Mercadoria/ordenar", orderByColumn, orderByDirection);
     }
 
     private string valor;
