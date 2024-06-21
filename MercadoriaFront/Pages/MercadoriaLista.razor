@@ -16,6 +16,20 @@ else
 {
     <div class="table-container">
         <a href=@($"/mercadoria/{Acoes.Inserir}") class="btn btn-primary mb-3">Inserir</a>
+        <h2>Buscar Por</h2>
+            <form class="form-custom">
+            <div class="form-group">
+                <select class="form-select" aria-label="Default select example" @onchange="SelecionarOpcao">
+                    <option value="nome">Nome</option>
+                    <option value="quantidade">Quantidade</option>
+                    <option value="peso">Peso</option>
+                    <option value="datacadastro">Data</option>
+                    <option value="setor">Setor</option>
+                    <option value="valor">Valor</option>
+                </select>
+                <input class="form-text" type="text" @bind="valor" @oninput="FindBy" placeholder="@selecionado"/>
+            </div>
+        </form>
         <table class="table table-striped table-bordered">
             <thead>
                 <tr>
@@ -79,19 +93,7 @@ else
             }      
             </tbody>  
         </table>
-        <form class="form-custom">
-            <div class="form-group">
-                <select class="form-select" aria-label="Default select example" @onchange="SelecionarOpcao">
-                    <option value="nome">Nome</option>
-                    <option value="quantidade">Quantidade</option>
-                    <option value="peso">Peso</option>
-                    <option value="datacadastro">Data</option>
-                    <option value="setor">Setor</option>
-                    <option value="valor">Valor</option>
-                </select>
-                <input class="form-text" type="text" @bind="valor" @oninput="FindBy" placeholder="@selecionado"/>
-            </div>
-        </form>
+
     </div>
 }
 
