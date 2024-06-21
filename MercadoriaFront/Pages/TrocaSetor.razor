@@ -1,0 +1,155 @@
+@page "/mercadoria/transferir/{Id?}"
+@using System.Net.Http
+@using System.Text.Json
+@using MercadoriaFront.Helpers
+@using MercadoriaFront.Models
+@using MercadoriaFront.Components
+@inject NavigationManager NavManager
+
+<div class="form-container">
+    @if (mercadoria == null)
+    {
+        <p><strong>Carregando...</strong></p>
+    }
+    else
+    {
+        <h1>Transferência de mercadoria</h1>
+        <EditForm Model="mercadoria" OnSubmit="Salvar" FormName="MercadoriaForm">
+            <div class="form-group">
+                <MyInput Title="Nome" @bind-Value="mercadoria.Nome" Disabled="true" />
+            </div>
+            <div class="form-group">
+                <MyInputNumber Title="Quantidade" @bind-Value="mercadoria.Quantidade" Disabled="true" />
+            </div>
+            <div class="form-group">
+                <MyInputNumber Title="Peso (Kg)" @bind-Value="mercadoria.Peso" Disabled="true" />
+            </div>
+            <div class="form-group">
+                <MyInputNumber Title="Valor (R$)" @bind-Value="mercadoria.Valor" Disabled="true" />
+            </div>
+            <div class="form-group">
+                <MyInput Title="Setor" @bind-Value="mercadoria.Setor" />
+            </div>
+            <div class="button-group">
+                <button class="btn btn-warning" type="submit">Tranferir</button>
+                <button class="btn btn-secondary" type="button" @onclick="Voltar">Voltar</button>
+            </div>
+        </EditForm>
+        @if (@mensagem != null)
+        {
+            <div class="alert alert-primary" role="alert">
+                @mensagem
+            </div>
+        }
+    }
+</div>
+
+@code {
+
+    [Parameter]
+    public string? Id { get; set; }
+
+    private string? mensagem = null;
+
+    private Mercadoria? mercadoria { get; set; }
+
+    private Transferencia transferencia { get; set; } = new();
+
+    private void Voltar()
+    {
+        NavManager.NavigateTo("/mercadoria");
+    }
+
+    private async Task ApresentarMensagem(string mensagem, int duracao = 2)
+    {
+        this.mensagem = mensagem;
+        var apresentarAte = DateTime.Now.AddSeconds(duracao);
+
+        StateHasChanged();
+
+        while (DateTime.Now < apresentarAte)
+            await Task.Delay(1000);
+
+        NavManager.NavigateTo("/mercadoria");
+    }
+
+    private async Task Alterar()
+    {
+        if (mercadoria == null)
+        {
+            await ApresentarMensagem("Erro: mercadoria não está carregada.");
+            return;
+        }
+
+        var httpClient = new HttpClient();
+       
+        using StringContent jsonContent = new(
+            JsonSerializer.Serialize(mercadoria),
+            System.Text.Encoding.UTF8,
+            "application/json"
+        );
+
+        using HttpResponseMessage response = await httpClient.PutAsync(
+                $"http://localhost:5191/api/mercadoria/{Id}",
+                jsonContent
+            );
+
+        response.EnsureSuccessStatusCode();
+
+        await Inserir();
+
+        await ApresentarMensagem($"Mercadoria alterado com sucesso!");
+    }
+
+    private async Task Inserir()
+    {
+        if (mercadoria == null)
+        {
+            await ApresentarMensagem("Erro: mercadoria não está carregada.");
+            return;
+        }
+
+        transferencia.DataTransferencia = DateTime.Now;
+        transferencia.Produto = mercadoria.Nome;
+        transferencia.SetorDestino = mercadoria.Setor;
+
+        var httpClient = new HttpClient();
+       
+        using StringContent jsonContent = new(
+            JsonSerializer.Serialize(transferencia),
+            System.Text.Encoding.UTF8,
+            "application/json"
+        );
+
+        using HttpResponseMessage response = await httpClient.PostAsync(
+                $"http://localhost:5191/api/Transferencia",
+                jsonContent
+            );
+
+        response.EnsureSuccessStatusCode();
+
+        await ApresentarMensagem("Transferência realizada com sucesso!");
+    }
+
+    private async Task Salvar()
+    {
+        await Alterar();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var client = new HttpClient();
+       
+        using HttpResponseMessage response = await client.GetAsync($"http://localhost:5191/api/mercadoria/{Id}");
+        response.EnsureSuccessStatusCode();
+        string responseBody = await response.Content.ReadAsStringAsync();
+
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
+        mercadoria = JsonSerializer.Deserialize<Mercadoria>(responseBody, options);
+        transferencia.SetorOrigem = mercadoria.Setor;
+    }
+}
