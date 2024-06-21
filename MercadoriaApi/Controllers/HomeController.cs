@@ -26,9 +26,9 @@ namespace MercadoriaApi.Controllers
         }
 
         [HttpGet("{orderByColumn}/{orderByDirection}")]
-        public async Task<ActionResult<IEnumerable<Mercadoria>>> GetAsyncOrdenado(string orderByColumn, string orderByDirection)
+        public async Task<ActionResult<IEnumerable<Mercadoria>>> GetAsync(string orderByColumn, string orderByDirection)
         {
-            var objetos = await dao.GetInOrder(orderByColumn, orderByDirection);
+            var objetos = await dao.RetornaPorOrdemAsync(orderByColumn, orderByDirection);
 
             if (objetos == null)
             {

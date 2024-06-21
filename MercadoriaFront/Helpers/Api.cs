@@ -28,7 +28,7 @@ public class Api
         return JsonSerializer.Deserialize<IList<T>>(responseBody, options) ?? new List<T>();
     }
 
-     public async Task<IList<T>> GetAsyncOrdenado<T>(string url, string orderByColumn, string orderByDirection) where T: new()
+    public async Task<IList<T>> GetFilteredMercadorias<T>(string url, string orderByColumn, string orderByDirection) where T: new()
     {
         using HttpResponseMessage response = await httpClient.GetAsync($"{url}/{orderByColumn}/{orderByDirection}");
         response.EnsureSuccessStatusCode();

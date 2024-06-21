@@ -57,6 +57,21 @@ namespace MercadoriaInfra.DAOs
             }
         }
 
+        public async Task<IList<T>> RetornaPorOrdemAsync(string orderByColumn, string orderByDirection) {
+
+            using (var conexao = new SqliteConnection(GetStringConexao()))
+            {
+                conexao.Open();
+
+                string sql = $"SELECT * FROM mercadoria ORDER BY {orderByColumn} {orderByDirection}";
+
+                var objetos = await conexao.QueryAsync<T>(sql);
+
+
+                return objetos.ToList();
+            }
+        }
+
         public async Task<T> RetornarPorIdAsync(string id)
         {
             using (var conexao = new SqliteConnection(GetStringConexao()))
@@ -112,20 +127,6 @@ namespace MercadoriaInfra.DAOs
                 sb.Append($", {mapa.Campo}=@{mapa.Propriedade}");
 
             return sb.ToString().Substring(1);
-        }
-
-        public async Task<IList<T>> GetInOrder(string orderByColumn, string orderByDirection) {
-
-            using (var conexao = new SqliteConnection(GetStringConexao()))
-            {
-                conexao.Open();
-
-                string sql = $"SELECT * FROM mercadoria ORDER BY {orderByColumn} {orderByDirection.ToUpper()}";
-
-                var objetos = await conexao.QueryAsync<T>(sql);
-
-                return objetos.ToList();
-            }
         }
 
         private static string GetStringConexao() =>
