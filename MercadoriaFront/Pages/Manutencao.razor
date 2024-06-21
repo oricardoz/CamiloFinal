@@ -1,0 +1,190 @@
+﻿@page "/mercadoria/{Acao}/{Id?}"
+@using System.Net.Http
+@using System.Text.Json
+@using MercadoriaFront.Helpers
+@using MercadoriaFront.Models
+@using MercadoriaFront.Components
+@inject NavigationManager NavManager
+
+@if (Objeto == null)
+{
+    <p><strong>Carregando...</strong></p>
+}
+else
+{
+    <h1>Mercadoria (@Acao)</h1>
+    <EditForm Model="Objeto" OnSubmit="Salvar" FormName="AtletaForm">
+        <MyInput Title="Nome" @bind-Value="Objeto.Nome" Disabled="@Desabilitar" />
+        <MyInputNumber Title="Quantidade" @bind-Value="Objeto.Quantidade" Disabled="@Desabilitar" />
+        <MyInputNumber Title="Peso" @bind-Value="Objeto.Peso" Disabled="@Desabilitar" />
+        <MyInputNumber Title="Valor" @bind-Value="Objeto.Valor" Disabled="@Desabilitar" />
+        @*
+        <div>
+            <label class="form-label">
+                Nome
+                <InputText @bind-Value="Objeto.Nome" disabled=@Desabilitar class="form-control" />
+            </label>
+        </div>
+        <div>
+            <label class="form-label">
+                Altura
+                <InputNumber @bind-Value="Objeto.Altura" disabled=@Desabilitar class="form-control" />
+            </label>
+        </div>
+        <div>
+            <label class="form-label">
+                Peso
+                <InputNumber @bind-Value="Objeto.Peso" disabled=@Desabilitar class="form-control" />
+            </label>
+        </div>
+        *@
+        <div>
+            @if (ComparaAcao(Acoes.Alterar))
+            {        
+                <button class="btn btn-warning" type="submit">Alterar</button>
+            }
+            else if (ComparaAcao(Acoes.Inserir))
+            {        
+                <button class="btn btn-primary" type="submit">Inserir</button>
+            }
+            else if (ComparaAcao(Acoes.Excluir))
+            {        
+                <button class="btn btn-danger" type="submit">Excluir</button>
+            }
+            <button class="btn btn-secondary" type="button" @onclick="Voltar">Voltar</button>
+        </div>
+    </EditForm>
+    @if (@mensagem != null)
+    {
+        <div class="alert alert-primary" role="alert">
+            @mensagem
+        </div>
+    }
+}
+
+@code {
+    [Parameter]
+    public string? Acao { get; set; }
+
+    [Parameter]
+    public string? Id { get; set; }
+
+    private bool Desabilitar => 
+        ComparaAcao(Acoes.Consultar, Acoes.Excluir);
+
+    private string? mensagem = null;
+
+    private Mercadoria? Objeto { get; set; }
+
+    private void Voltar()
+    {
+        NavManager.NavigateTo("/mercadoria");
+    }
+
+    private async Task ApresentarMensagem(string mensagem, int duracao = 2)
+    {
+        this.mensagem = mensagem;
+        var apresentarAte = DateTime.Now.AddSeconds(duracao);
+
+        StateHasChanged();
+
+        while (DateTime.Now < apresentarAte)
+            await Task.Delay(1000);
+
+        NavManager.NavigateTo("/mercadoria");
+    }
+
+    private bool ComparaAcao(params string[] acoes)
+    {
+        foreach (var acaoAtual in acoes)
+            if (Acao.Equals(acaoAtual, StringComparison.OrdinalIgnoreCase))
+                return true;
+        
+        return false;
+    }
+
+    private async Task Inserir()
+    {
+        var httpClient = new HttpClient();
+       
+        using StringContent jsonContent = new(
+            JsonSerializer.Serialize(Objeto),
+            System.Text.Encoding.UTF8,
+            "application/json"
+        );
+
+        using HttpResponseMessage response = await httpClient.PostAsync(
+                $"http://localhost:5191/api/mercadoria",
+                jsonContent
+            );
+
+        response.EnsureSuccessStatusCode();
+
+        await ApresentarMensagem("Mercadoria inserido com sucesso!");
+    }
+
+    private async Task Alterar()
+    {
+        var httpClient = new HttpClient();
+       
+        using StringContent jsonContent = new(
+            JsonSerializer.Serialize(Objeto),
+            System.Text.Encoding.UTF8,
+            "application/json"
+        );
+
+        using HttpResponseMessage response = await httpClient.PutAsync(
+                $"http://localhost:5191/api/mercadoria/{Id}",
+                jsonContent
+            );
+
+        response.EnsureSuccessStatusCode();
+
+        await ApresentarMensagem($"Mercadoria alterado com sucesso!");
+    }
+
+    private async Task Excluir()
+    {
+        var httpClient = new HttpClient();
+       
+        using HttpResponseMessage response = await httpClient.DeleteAsync(
+            $"http://localhost:5191/api/mercadoria/{Id}"
+        );
+
+        response.EnsureSuccessStatusCode();
+
+        await ApresentarMensagem("Mercadoria excluído com sucesso!");
+    }
+
+    private async Task Salvar()
+    {
+        if (ComparaAcao(Acoes.Alterar))
+            await Alterar();
+        else if (ComparaAcao(Acoes.Inserir))
+            await Inserir();
+        else if (ComparaAcao(Acoes.Excluir))
+            await Excluir();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Acao.Equals(Acoes.Inserir, StringComparison.OrdinalIgnoreCase))
+        {
+            Objeto = new Mercadoria();
+            return;
+        }
+
+        var client = new HttpClient();
+       
+        using HttpResponseMessage response = await client.GetAsync($"http://localhost:5191/api/mercadoria/{Id}");
+        response.EnsureSuccessStatusCode();
+        string responseBody = await response.Content.ReadAsStringAsync();
+
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
+        Objeto = JsonSerializer.Deserialize<Mercadoria>(responseBody, options);
+    }
+}

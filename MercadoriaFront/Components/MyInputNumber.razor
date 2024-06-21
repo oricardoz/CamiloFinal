@@ -1,0 +1,11 @@
+@inherits MyInputNumberComponent
+
+<div id="@Id">
+    <label id="@($"{Id}-title")" class="form-label">
+        @Title
+
+        @*<input type="number" value="@Value" @onchange="OnChangeAsync" disabled=@Disabled class="form-control" />*@
+        <InputNumber @bind-Value="Value" disabled=@Disabled class="form-control" />
+    </label>
+    
+</div>

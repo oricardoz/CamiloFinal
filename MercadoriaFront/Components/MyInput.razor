@@ -1,0 +1,10 @@
+@inherits MyInputComponent
+
+<div id="@Id">
+    <label id="@($"{Id}-title")" class="form-label">
+        @Title
+
+        <input type="@Type.ToString().ToLower()" value="@Value" @onchange="OnChangeAsync" disabled=@Disabled class="form-control" />
+    </label>
+    
+</div>

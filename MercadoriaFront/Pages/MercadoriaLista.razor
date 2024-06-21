@@ -1,0 +1,53 @@
+@page "/mercadoria"
+@using MercadoriaFront.Helpers
+@using MercadoriaFront.Models
+@using System.Net.Http
+@using System.Text.Json
+@inject Api api
+
+<h1>Mercadoria</h1>
+
+@if (Objetos == null)
+{
+    <p><strong>Carregando...</strong></p>
+}
+else
+{
+    <a href=@($"/mercadoria/{Acoes.Inserir}") class="btn btn-primary">Inserir</a>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Nome</th>
+                <th scope="col">Quantidade</th>
+                <th scope="col">Peso</th>
+                <th scope="col">Valor</th>
+                <th scope="col">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach(var obj in Objetos)
+        {
+            <tr>
+                <td>@obj.Nome</td>
+                <td>@obj.Quantidade</td>
+                <td>@obj.Peso</td>
+                <td>@obj.Valor</td>
+                <td>
+                    <a href=@($"/mercadoria/{Acoes.Consultar}/{obj.Id}") class="btn btn-secondary">Consultar</a>
+                    <a href=@($"/mercadoria/{Acoes.Alterar}/{obj.Id}") class="btn btn-warning">Alterar</a>
+                    <a href=@($"/mercadoria/{Acoes.Excluir}/{obj.Id}") class="btn btn-danger">Excluir</a>
+                </td>
+            </tr>
+        }      
+        </tbody>  
+    </table>
+}
+
+@code {
+    private IList<Mercadoria>? Objetos { get; set; } = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Objetos = await api.GetAsync<Mercadoria>("/api/mercadoria");
+    }
+}
