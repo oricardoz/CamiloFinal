@@ -6,61 +6,54 @@
 @using MercadoriaFront.Components
 @inject NavigationManager NavManager
 
-@if (Objeto == null)
-{
-    <p><strong>Carregando...</strong></p>
-}
-else
-{
-    <h1>Mercadoria (@Acao)</h1>
-    <EditForm Model="Objeto" OnSubmit="Salvar" FormName="AtletaForm">
-        <MyInput Title="Nome" @bind-Value="Objeto.Nome" Disabled="@Desabilitar" />
-        <MyInputNumber Title="Quantidade" @bind-Value="Objeto.Quantidade" Disabled="@Desabilitar" />
-        <MyInputNumber Title="Peso" @bind-Value="Objeto.Peso" Disabled="@Desabilitar" />
-        <MyInputNumber Title="Valor" @bind-Value="Objeto.Valor" Disabled="@Desabilitar" />
-        @*
-        <div>
-            <label class="form-label">
-                Nome
-                <InputText @bind-Value="Objeto.Nome" disabled=@Desabilitar class="form-control" />
-            </label>
-        </div>
-        <div>
-            <label class="form-label">
-                Altura
-                <InputNumber @bind-Value="Objeto.Altura" disabled=@Desabilitar class="form-control" />
-            </label>
-        </div>
-        <div>
-            <label class="form-label">
-                Peso
-                <InputNumber @bind-Value="Objeto.Peso" disabled=@Desabilitar class="form-control" />
-            </label>
-        </div>
-        *@
-        <div>
-            @if (ComparaAcao(Acoes.Alterar))
-            {        
-                <button class="btn btn-warning" type="submit">Alterar</button>
-            }
-            else if (ComparaAcao(Acoes.Inserir))
-            {        
-                <button class="btn btn-primary" type="submit">Inserir</button>
-            }
-            else if (ComparaAcao(Acoes.Excluir))
-            {        
-                <button class="btn btn-danger" type="submit">Excluir</button>
-            }
-            <button class="btn btn-secondary" type="button" @onclick="Voltar">Voltar</button>
-        </div>
-    </EditForm>
-    @if (@mensagem != null)
+<div class="form-container">
+    @if (Objeto == null)
     {
-        <div class="alert alert-primary" role="alert">
-            @mensagem
-        </div>
+        <p><strong>Carregando...</strong></p>
     }
-}
+    else
+    {
+        <h1>Mercadoria (@Acao)</h1>
+        <EditForm Model="Objeto" OnSubmit="Salvar" FormName="AtletaForm">
+            <div class="form-group">
+                <MyInput Title="Nome" @bind-Value="Objeto.Nome" Disabled="@Desabilitar" />
+            </div>
+            <div class="form-group">
+                <MyInputNumber Title="Quantidade" @bind-Value="Objeto.Quantidade" Disabled="@Desabilitar" />
+            </div>
+            <div class="form-group">
+                <MyInputNumber Title="Peso (Kgs)" @bind-Value="Objeto.Peso" Disabled="@Desabilitar" />
+            </div>
+            <div class="form-group">
+                <MyInputNumber Title="Valor (R$)" @bind-Value="Objeto.Valor" Disabled="@Desabilitar" />
+            </div>
+            <div class="form-group">
+                <MyInput Title="Setor" @bind-Value="Objeto.Setor" Disabled="@Desabilitar" />
+            </div>
+            <div class="button-group">
+                @if (ComparaAcao(Acoes.Alterar))
+                {        
+                    <button class="btn btn-warning" type="submit">Alterar</button>
+                }
+                else if (ComparaAcao(Acoes.Inserir))
+                {        
+                    <button class="btn btn-primary " type="submit">Inserir</button>
+                }
+                else if (ComparaAcao(Acoes.Excluir))
+                {        
+                    <button class="btn btn-danger" type="submit">Excluir</button>
+                }
+                <button class="btn btn-secondary" type="button" @onclick="Voltar">Voltar</button>
+            </div>
+        </EditForm>
+        @if (@mensagem != null)
+        {
+            <div class="alert alert-primary" role="alert">
+                @mensagem
+            </div>
+        }
+    }
+</div>
 
 @code {
     [Parameter]
@@ -105,6 +98,8 @@ else
 
     private async Task Inserir()
     {
+        Objeto.DataCadastro = DateTime.Now;
+
         var httpClient = new HttpClient();
        
         using StringContent jsonContent = new(

@@ -1,4 +1,4 @@
-@page "/mercadoria"
+@page "/mercadoria/lista/{orderByColumn}/{orderByDirection}"
 @using MercadoriaFront.Helpers
 @using MercadoriaFront.Models
 @using System.Net.Http
@@ -50,10 +50,17 @@ else
 }
 
 @code {
+    [Parameter]
+    public string orderByColumn { get; set; } = "nome";
+
+    [Parameter]
+    public string orderByDirection { get; set; } = "ASC";
+
     private IList<Mercadoria>? Objetos { get; set; } = null;
 
     protected override async Task OnInitializedAsync()
     {
-        Objetos = await api.GetAsync<Mercadoria>("/api/mercadoria");
+       
+        Objetos = await api.GetAsyncOrdenado<Mercadoria>("/api/mercadoria", orderByColumn , orderByDirection);
     }
 }

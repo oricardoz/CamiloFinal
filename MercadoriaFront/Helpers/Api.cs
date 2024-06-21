@@ -28,6 +28,20 @@ public class Api
         return JsonSerializer.Deserialize<IList<T>>(responseBody, options) ?? new List<T>();
     }
 
+     public async Task<IList<T>> GetAsyncOrdenado<T>(string url, string orderByColumn, string orderByDirection) where T: new()
+    {
+        using HttpResponseMessage response = await httpClient.GetAsync($"{url}/{orderByColumn}/{orderByDirection}");
+        response.EnsureSuccessStatusCode();
+        string responseBody = await response.Content.ReadAsStringAsync();
+
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
+        return JsonSerializer.Deserialize<IList<T>>(responseBody, options) ?? new List<T>();
+    }
+
     public async Task<T?> GetAsync<T>(string url, string id) where T: new()
     {
         using HttpResponseMessage response = await httpClient.GetAsync($"{url}/{id}");

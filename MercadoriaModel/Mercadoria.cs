@@ -16,8 +16,10 @@ namespace MercadoriaModel
 
         public double Quantidade { get; set; }
 
-        public double Valor {  get; set; }
+        public double Valor { get; set; }
 
-        public DateTime? DataValidade { get; set; }
+        public string Setor { get; set; }
+
+        public DateTime? DataCadastro { get; set; }
     }
 }

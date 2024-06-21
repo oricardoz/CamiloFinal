@@ -25,6 +25,19 @@ namespace MercadoriaApi.Controllers
             return Ok(objetos);
         }
 
+        [HttpGet("{orderByColumn}/{orderByDirection}")]
+        public async Task<ActionResult<IEnumerable<Mercadoria>>> GetAsyncOrdenado(string orderByColumn, string orderByDirection)
+        {
+            var objetos = await dao.GetInOrder(orderByColumn, orderByDirection);
+
+            if (objetos == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(objetos);
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Mercadoria>> GetId(string id)
         {
@@ -63,7 +76,8 @@ namespace MercadoriaApi.Controllers
             objOrig.Nome = obj.Nome;
             objOrig.Peso = obj.Peso;
             objOrig.Valor = obj.Valor;
-            objOrig.DataValidade = obj.DataValidade;
+            objOrig.Setor = obj.Setor;
+            objOrig.DataCadastro = obj.DataCadastro;
 
             await dao.AlterarAsync(obj);
 

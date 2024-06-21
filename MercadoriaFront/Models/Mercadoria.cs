@@ -9,9 +9,11 @@ namespace MercadoriaFront.Models
     public class Mercadoria: Modelo<Mercadoria>
     {
         public string Nome { get; set; } = "";
-        public double Quantidade { get; set; }
         public double Peso { get; set; }
+        public double Quantidade { get; set; }
         public double Valor { get; set; }
+        public string Setor { get; set; }
+        public DateTime? DataCadastro { get; set; }
         
 
         public override void ConfigValidator(out Validator<Mercadoria> validator, out Mercadoria obj)

@@ -114,6 +114,20 @@ namespace MercadoriaInfra.DAOs
             return sb.ToString().Substring(1);
         }
 
+        public async Task<IList<T>> GetInOrder(string orderByColumn, string orderByDirection) {
+
+            using (var conexao = new SqliteConnection(GetStringConexao()))
+            {
+                conexao.Open();
+
+                string sql = $"SELECT * FROM mercadoria ORDER BY {orderByColumn} {orderByDirection.ToUpper()}";
+
+                var objetos = await conexao.QueryAsync<T>(sql);
+
+                return objetos.ToList();
+            }
+        }
+
         private static string GetStringConexao() =>
         "Data Source=../BD/banco_de_dados.db";
     }

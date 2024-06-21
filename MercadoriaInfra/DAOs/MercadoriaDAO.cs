@@ -18,7 +18,8 @@ namespace MercadoriaInfra.DAOs
             new() { Propriedade = "Peso", Campo = "peso" },
             new() { Propriedade = "Quantidade", Campo = "quantidade" },
             new() { Propriedade = "Valor", Campo = "valor" },
-            new() { Propriedade = "DataValidade", Campo = "datavalidade" }
+            new() { Propriedade = "DataCadastro", Campo = "datacadastro" },
+            new() { Propriedade = "Setor", Campo = "setor" },
         };
     }
 }
