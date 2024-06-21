@@ -63,7 +63,7 @@ namespace MercadoriaInfra.DAOs
             {
                 conexao.Open();
 
-                string sql = $"SELECT * FROM mercadoria ORDER BY {orderByColumn} {orderByDirection}";
+                string sql = $"SELECT * FROM {NomeTabela} ORDER BY {orderByColumn} {orderByDirection}";
 
                 var objetos = await conexao.QueryAsync<T>(sql);
 
@@ -78,7 +78,7 @@ namespace MercadoriaInfra.DAOs
             {
                 conexao.Open();
 
-                string sql = $"SELECT * FROM mercadoria WHERE {selecionado} LIKE '{searchTerm}%'";
+                string sql = $"SELECT * FROM {NomeTabela} WHERE {selecionado} LIKE '{searchTerm}%'";
 
                 var objetos = await conexao.QueryAsync<T>(sql);
 
