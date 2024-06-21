@@ -1,0 +1,130 @@
+@page "/transacao"
+@using MercadoriaFront.Helpers
+@using MercadoriaFront.Models
+@using MercadoriaFront.Components
+@using System.Net.Http
+@using System.Text.Json
+@inject Api api
+
+<h1>Mercadoria</h1>
+
+@if (Objetos == null)
+{
+    <p><strong>Carregando...</strong></p>
+}
+else
+{
+    <div class="table-container">
+        <a href=@($"/mercadoria/{Acoes.Inserir}") class="btn btn-primary mb-3">Inserir</a>
+        <h2>Buscar Por</h2>
+            <form class="form-custom">
+            <div class="form-group">
+                <select class="form-select" aria-label="Default select example" @onchange="SelecionarOpcao">
+                    <option value="nome">Nome</option>
+                    <option value="quantidade">Quantidade</option>
+                    <option value="peso">Peso</option>
+                    <option value="datacadastro">Data</option>
+                    <option value="setor">Setor</option>
+                    <option value="valor">Valor</option>
+                </select>
+                <input class="form-text" type="text" @bind="valor" @oninput="FindBy" placeholder="@selecionado"/>
+            </div>
+        </form>
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">
+                        Nome
+                        <button class="btn btn-link" @onclick='() => SortByColumn("nome", "ASC")'><ion-icon name="caret-up-outline"></ion-icon></button>
+                        <button class="btn btn-link" @onclick='() => SortByColumn("nome", "DESC")'><ion-icon name="caret-down-outline"></ion-icon></button>
+                    </th>
+                    <th scope="col">
+                        Quantidade
+                        <button class="btn btn-link" @onclick='() => SortByColumn("quantidade", "ASC")'><ion-icon name="caret-up-outline"></ion-icon></button>
+                        <button class="btn btn-link" @onclick='() => SortByColumn("quantidade", "DESC")'><ion-icon name="caret-down-outline"></ion-icon></button>
+                    </th>
+                    <th scope="col">
+                        Peso
+                        <button class="btn btn-link" @onclick='() => SortByColumn("peso", "ASC")'><ion-icon name="caret-up-outline"></ion-icon></button>
+                        <button class="btn btn-link" @onclick='() => SortByColumn("peso", "DESC")'><ion-icon name="caret-down-outline"></ion-icon></button>
+                    </th>
+                    <th scope="col">
+                        Data de Cadastro
+                        <button class="btn btn-link" @onclick='() => SortByColumn("datacadastro", "ASC")'><ion-icon name="caret-up-outline"></ion-icon></button>
+                        <button class="btn btn-link" @onclick='() => SortByColumn("datacadastro", "DESC")'><ion-icon name="caret-down-outline"></ion-icon></button>
+                    </th>
+                    <th scope="col">
+                        Setor
+                        <button class="btn btn-link" @onclick='() => SortByColumn("setor", "ASC")'><ion-icon name="caret-up-outline"></ion-icon></button>
+                        <button class="btn btn-link" @onclick='() => SortByColumn("setor", "DESC")'><ion-icon name="caret-down-outline"></ion-icon></button>
+                    </th>
+                    <th scope="col">
+                        Valor
+                        <button class="btn btn-link" @onclick='() => SortByColumn("valor", "ASC")'><ion-icon name="caret-up-outline"></ion-icon></button>
+                        <button class="btn btn-link" @onclick='() => SortByColumn("valor", "DESC")'><ion-icon name="caret-down-outline"></ion-icon></button>
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach(var obj in Objetos)
+            {
+                <tr>
+                    <td>@obj.Nome</td>
+                    <td>@obj.Quantidade u</td>
+                    <td>@obj.Peso Kg</td>
+                    <td>@obj.DataCadastro?.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>@obj.Setor</td>
+                    <td>@obj.Valor.ToString("C2")</td>
+                    <td class="table-actions">
+                        <div class="dropdown">
+                            <button class="btn btn-link" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <ion-icon name="cog-outline"></ion-icon>
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 30px, 0px);">
+                                <a class="dropdown-item" href=@($"/mercadoria/transferir/{obj.Id}")>Tranferir</a>
+                                <a class="dropdown-item" href=@($"/mercadoria/{Acoes.Consultar}/{obj.Id}")>Consultar</a>
+                                <a class="dropdown-item" href=@($"/mercadoria/{Acoes.Alterar}/{obj.Id}")>Alterar</a>
+                                <a class="dropdown-item" href=@($"/mercadoria/{Acoes.Excluir}/{obj.Id}")>Excluir</a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            }      
+            </tbody>  
+        </table>
+
+    </div>
+}
+
+@code {
+    private IList<Mercadoria>? Objetos { get; set; } = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Objetos = await api.GetAsync<Mercadoria>("/api/mercadoria");
+    }
+
+    private async Task SortByColumn(string orderByColumn, string orderByDirection)
+    {
+        Objetos = await api.GetFilteredMercadorias<Mercadoria>("/api/Mercadoria/ordenar", orderByColumn, orderByDirection);
+    }
+
+    private string valor;
+
+    private string selecionado = "nome";
+
+    private void SelecionarOpcao(ChangeEventArgs e) {
+
+        selecionado = e.Value.ToString();
+        
+    }
+
+    private async Task FindBy(ChangeEventArgs args)
+    {
+        if(args.Value.ToString() == "")
+            Objetos = await api.GetAsync<Mercadoria>("/api/mercadoria");
+        else
+            Objetos = await api.GetBySearch<Mercadoria>("/api/Mercadoria/filtrar", args.Value.ToString(), selecionado);
+    }
+}
